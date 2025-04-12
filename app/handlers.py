@@ -5,8 +5,6 @@ from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, W
 
 rt = Router()
 
-# @rt.message(CommandStart())
-# async def cmd_start(message: Message):
-#     await message.answer("Hello! Welcome to bot!", reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-#         [InlineKeyboardButton(text="Play!", web_app=WebAppInfo(url=))]
-#     ]))
+@rt.message(CommandStart())
+async def cmd_start(message: Message):
+    await message.answer("Hello! Welcome to bot!")
