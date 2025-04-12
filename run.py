@@ -25,6 +25,7 @@ app.add_middleware(
 )
 
 async def start_bot():
+    print("Bot started!")
     await init_db()
     dp.include_router(rt)
     await dp.start_polling(bot)
