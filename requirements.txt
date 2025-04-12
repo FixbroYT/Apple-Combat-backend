@@ -1,8 +1,9 @@
 aiogram~=3.19.0
 asyncio~=3.4.3
-sqlalchemy[asyncio]
+sqlalchemy[asyncio]~=2.0.40
 fastapi~=0.115.12
 python-dotenv~=1.1.0
 pydantic~=2.10.6
-uvicorn
+uvicorn~=0.34.0
 asyncpg
+requests~=2.32.3
