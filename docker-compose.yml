@@ -14,14 +14,17 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   python:
-    build: .
-    depends_on:
-      - db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python run.py
     env_file:
       - .env
     environment:
       BOT_TOKEN: ${BOT_TOKEN}
       DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      - db
     networks:
       - db-to-python
 
