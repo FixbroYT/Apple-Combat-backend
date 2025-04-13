@@ -43,7 +43,7 @@ async def set_location(tg_id: int, location_id: int):
     response = await rq.change_current_location(user_id, location_id)
     return response
 
-@router.post("/api/users/create")
+@router.post("/users/create")
 async def create_user_endpoint(data: UserCreateRequest):
     successful_creation = await rq.add_user(data.tg_id)
     user_id = await rq.get_user_id(data.tg_id)
