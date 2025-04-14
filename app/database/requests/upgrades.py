@@ -11,7 +11,9 @@ async def buy_upgrade(user_id, upgrade_id):
         if not upgrade:
             return None
 
-        upgrade_cost = upgrade.cost * user_upgrade.count
+        upgrade_cost = upgrade.cost
+        if user_upgrade:
+            upgrade_cost *= user_upgrade.count
 
         if user.coins >= upgrade_cost:
             user.coins -= upgrade_cost
@@ -19,8 +21,6 @@ async def buy_upgrade(user_id, upgrade_id):
             await session.commit()
         else:
             return None
-
-        user_upgrade = await session.scalar(select(UserUpgrade).where(UserUpgrade.user_id == user_id, UserUpgrade.upgrade_id == upgrade_id))
 
         if not user_upgrade:
             new_connection = UserUpgrade(user_id=user_id, upgrade_id=upgrade_id)
