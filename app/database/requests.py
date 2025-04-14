@@ -46,14 +46,14 @@ async def buy_location(user_id, location_id):
         location = await session.scalar(select(Location).where(Location.id == location_id))
 
         if not location:
-            return {"success": False}
+            return None
 
         if user.coins >= location.cost:
             user.coins -= location.cost
             await session.flush()
             await session.commit()
         else:
-            return {"success": False}
+            return None
 
         await add_location_connection(user_id, location_id)
         owned_locations = await session.scalars(select(UserLocation).where(UserLocation.user_id == user_id))
@@ -73,10 +73,6 @@ async def buy_location(user_id, location_id):
 async def change_current_location(user_id, location_id):
     async with async_session() as session:
         user = await session.scalar(select(User).where(User.id == user_id))
-
-        if not user:
-            return {"success": False}
-
         location = await session.scalar(select(UserLocation).where(UserLocation.user_id == user_id, UserLocation.location_id == location_id))
 
         if not location:
@@ -95,21 +91,17 @@ async def change_current_location(user_id, location_id):
 async def buy_upgrade(user_id, upgrade_id):
     async with async_session() as session:
         user = await session.scalar(select(User).where(User.id == user_id))
-
-        if not user:
-            return {"success": False}
-
         upgrade = await session.scalar(select(Upgrade).where(Upgrade.id == upgrade_id))
 
         if not upgrade:
-            return {"success": False}
+            return None
 
         if user.coins >= upgrade.cost:
             user.coins -= upgrade.cost
             await session.flush()
             await session.commit()
         else:
-            return {"success": False}
+            return None
 
         user_upgrade = await session.scalar(select(UserUpgrade).where(UserUpgrade.user_id == user_id, UserUpgrade.upgrade_id == upgrade_id))
 
@@ -142,9 +134,6 @@ async def update_user_balance(user_id):
     async with async_session() as session:
         user = await session.scalar(select(User).where(User.id == user_id))
         amount = await get_user_income(user_id)
-
-        if not user:
-            return None
 
         user.coins += amount
         await session.commit()
@@ -255,9 +244,6 @@ async def get_user_income(user_id):
     async with async_session() as session:
         user = await session.scalar(select(User).where(User.id == user_id))
         amount = 1
-
-        if not user:
-            return None
 
         upgrade_1 = await session.scalar(select(UserUpgrade).where(UserUpgrade.user_id == user_id, UserUpgrade.upgrade_id == 1))
         upgrade_1_bonus = await session.scalar(select(Upgrade).where(Upgrade.id == 1))
