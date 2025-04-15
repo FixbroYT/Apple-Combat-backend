@@ -17,13 +17,13 @@ async def add_location_connection(user_id, location_id):
 async def buy_location(user_id, location_id):
     async with async_session() as session:
         user = await session.scalar(select(User).where(User.id == user_id))
-        location = await session.scalar(select(Location).where(Location.id == location_id))
+        location_cost = await get_location_cost(location_id)
 
-        if not location:
+        if not location_cost:
             return None
 
-        if user.coins >= location.cost:
-            user.coins -= location.cost
+        if user.coins >= location_cost:
+            user.coins -= location_cost
             await session.flush()
             await session.commit()
         else:
@@ -77,3 +77,12 @@ async def get_all_locations():
             response.append({"id": location.id, "name": location.name, "bonus_multiplier": location.bonus_multiplier})
 
         return response
+
+async def get_location_cost(location_id):
+    async with async_session() as session:
+        location = await session.scalar(select(Location).where(Location.id == location_id))
+
+        if not location:
+            return None
+
+        return location.cost

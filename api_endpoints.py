@@ -97,3 +97,10 @@ async def get_locations():
     if not response:
         raise HTTPException(status_code=404, detail="Locations not found")
     return response
+
+@router.get("/locations/{location_id}")
+async def get_location_cost(location_id: int):
+    location_cost = await location_requests.get_location_cost(location_id)
+    if not location_cost:
+        raise HTTPException(status_code=404, detail="Location not found")
+    return {"location_cost": location_cost}
