@@ -71,3 +71,21 @@ async def get_user_upgrade_cost(user_id, upgrade_id):
         upgrade_cost = upgrade.cost * user_upgrade.count
 
         return upgrade_cost
+
+async def passive_income_loop():
+    while True:
+        async with async_session() as session:
+            users = await session.scalars(select(User).join(UserUpgrade).where(UserUpgrade.upgrade_id == 2))
+            upgrade = await session.scalar(select(Upgrade).where(Upgrade.id == 2))
+
+            if not users or not upgrade:
+                return None
+
+            for user in users:
+                user_upgrade = await session.scalar(select(UserUpgrade).where(UserUpgrade.user_id == user.id, UserUpgrade.upgrade_id == 2))
+                if not user_upgrade:
+                    return None
+
+                user.coins += upgrade.bonus * user_upgrade.count
+                await session.flush()
+                await session.commit()
