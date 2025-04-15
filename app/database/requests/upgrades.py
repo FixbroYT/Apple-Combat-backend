@@ -7,13 +7,10 @@ async def buy_upgrade(user_id, upgrade_id):
         user = await session.scalar(select(User).where(User.id == user_id))
         upgrade = await session.scalar(select(Upgrade).where(Upgrade.id == upgrade_id))
         user_upgrade = await session.scalar(select(UserUpgrade).where(UserUpgrade.user_id == user_id, UserUpgrade.upgrade_id == upgrade_id))
+        upgrade_cost = await get_user_upgrade_cost(user_id, upgrade_id)
 
-        if not upgrade:
+        if not upgrade or not upgrade_cost:
             return None
-
-        upgrade_cost = upgrade.cost
-        if user_upgrade:
-            upgrade_cost *= user_upgrade.count
 
         if user.coins >= upgrade_cost:
             user.coins -= upgrade_cost
@@ -60,3 +57,17 @@ async def get_upgrade_name(upgrade_id):
 
         upgrade_name = upgrade.name
         return upgrade_name
+
+async def get_user_upgrade_cost(user_id, upgrade_id):
+    async with async_session() as session:
+        upgrade = await session.scalar(select(Upgrade).where(Upgrade.id == upgrade_id))
+        user_upgrade = await session.scalar(select(UserUpgrade).where(UserUpgrade.user_id == user_id, UserUpgrade.upgrade_id == upgrade_id))
+
+        if not upgrade:
+            return None
+        if not user_upgrade:
+            return upgrade.cost
+
+        upgrade_cost = upgrade.cost * user_upgrade.count
+
+        return upgrade_cost

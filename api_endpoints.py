@@ -17,6 +17,7 @@ async def get_internal_user_id(tg_id: int)-> int:
         raise HTTPException(status_code=404, detail="User not found")
     return user_id
 
+
 # users requests
 @router.post("/users/create")
 async def create_user_endpoint(data: UserCreateRequest):
@@ -79,6 +80,13 @@ async def get_upgrades():
     if not response:
         raise HTTPException(status_code=404, detail="Upgrades not found")
     return response
+
+@router.get("/users/{tg_id}/upgrades/{upgrade_id}")
+async def get_upgrade_cost(upgrade_id:int , user_id: int = Depends(get_internal_user_id)):
+    upgrade_cost = await upgrades_requests.get_user_upgrade_cost(user_id, upgrade_id)
+    if not upgrade_cost:
+        raise HTTPException(status_code=404, detail="Upgrades not found")
+    return {"upgrade_cost": upgrade_cost}
 
 
 
