@@ -36,12 +36,12 @@ async def start_bot():
 
 async def start_all():
     bot_task = asyncio.create_task(start_bot())
-    passive_income_task = asyncio.create_task(await passive_income_loop())
+    asyncio.create_task(passive_income_loop())
     config = uvicorn.Config(app, host="0.0.0.0", port=8000, loop="asyncio")
     server = uvicorn.Server(config)
     api_task = asyncio.create_task(server.serve())
 
-    await asyncio.gather(bot_task, api_task, passive_income_task)
+    await asyncio.gather(bot_task, api_task)
 
 if __name__ == "__main__":
     try:
