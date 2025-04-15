@@ -1,3 +1,4 @@
+import asyncio
 from sqlalchemy import select
 
 from app.database.models import async_session, User, UserUpgrade, Upgrade
@@ -75,17 +76,25 @@ async def get_user_upgrade_cost(user_id, upgrade_id):
 async def passive_income_loop():
     while True:
         async with async_session() as session:
-            users = await session.scalars(select(User).join(UserUpgrade).where(UserUpgrade.upgrade_id == 2))
             upgrade = await session.scalar(select(Upgrade).where(Upgrade.id == 2))
+            if not upgrade:
+                await asyncio.sleep(1)
+                continue
 
-            if not users or not upgrade:
-                return None
+            results = await session.execute(
+                select(User, UserUpgrade)
+                .join(UserUpgrade, User.id == UserUpgrade.user_id)
+                .where(UserUpgrade.upgrade_id == 2)
+            )
 
-            for user in users:
-                user_upgrade = await session.scalar(select(UserUpgrade).where(UserUpgrade.user_id == user.id, UserUpgrade.upgrade_id == 2))
-                if not user_upgrade:
-                    return None
+            rows = results.all()
+            if not rows:
+                await asyncio.sleep(1)
+                continue
 
+            for user, user_upgrade in rows:
                 user.coins += upgrade.bonus * user_upgrade.count
-                await session.flush()
-                await session.commit()
+
+            await session.commit()
+
+        await asyncio.sleep(1)
