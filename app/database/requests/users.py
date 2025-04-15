@@ -76,7 +76,7 @@ async def get_user_upgrades(user_id):
             upgrade_name = await requests.upgrades.get_upgrade_name(upgrade.upgrade_id)
 
             response.append({
-                "id": upgrade.id, "name": upgrade_name, "count": upgrade.count
+                "id": upgrade.upgrade_id, "name": upgrade_name, "count": upgrade.count
             })
 
         return response
