@@ -99,10 +99,11 @@ async def get_user_income(user_id):
 
         upgrade_1 = await session.scalar(select(UserUpgrade).where(UserUpgrade.user_id == user_id, UserUpgrade.upgrade_id == 1))
         upgrade_1_bonus = await session.scalar(select(Upgrade).where(Upgrade.id == 1))
-        upgrade_1_bonus = upgrade_1_bonus.bonus
 
-        if upgrade_1:
+        if upgrade_1 and upgrade_1_bonus:
+            upgrade_1_bonus = upgrade_1_bonus.bonus
             amount = (upgrade_1.count * upgrade_1_bonus) + amount
+
 
         location_id = user.location_id
         location_bonus = await session.scalar(select(Location).where(Location.id == location_id))

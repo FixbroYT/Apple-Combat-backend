@@ -69,6 +69,9 @@ async def add_balance(tg_id: int):
 @router.get("/users/{tg_id}/income")
 async def get_user_income(user_id: int = Depends(get_internal_user_id)):
     income = await users_requests.get_user_income(user_id)
+    if not income:
+        raise HTTPException(status_code=404, detail="Upgrade not found")
+
     return {"income": income}
 
 
