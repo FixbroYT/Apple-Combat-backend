@@ -148,20 +148,20 @@ async def casino(user_id, bet):
 
         random_num = randint(1, 100)
 
-        win = True
-
         if random_num <= 5:
-            win_amount = bet * 4
+            coefficient = 4
+            win_amount = bet * coefficient
         elif 5 < random_num <= 20:
-            win_amount = bet * 3
+            coefficient = 3
+            win_amount = bet * coefficient
         elif 20 < random_num <= 50:
-            win_amount = bet * 2
+            coefficient = 2
+            win_amount = bet * coefficient
         else:
-            win_amount = 0
-            win = False
+            return {"win": False, "user_coins": user.coins}
 
         user.coins += win_amount
         await session.flush()
         await session.commit()
 
-        return {"win": win, "win_amount": win_amount, "user_coins": user.coins}
+        return {"win": True,"coefficient": coefficient, "win_amount": win_amount, "user_coins": user.coins}
