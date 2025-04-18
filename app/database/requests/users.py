@@ -145,6 +145,7 @@ async def casino(user_id, bet):
 
         user.coins -= bet
         await session.flush()
+        await session.commit()
 
         random_num = randint(1, 100)
 
