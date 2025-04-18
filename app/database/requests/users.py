@@ -140,7 +140,7 @@ async def casino(user_id, bet):
     async with async_session() as session:
         user = await session.scalar(select(User).where(User.id == user_id))
 
-        if bet > user.coins or bet > 1000 or bet < 1:
+        if bet > user.coins or bet > 5000 or bet < 1:
             return None
 
         user.coins -= bet
