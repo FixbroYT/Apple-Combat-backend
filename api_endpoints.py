@@ -10,6 +10,10 @@ router = APIRouter()
 class UserCreateRequest(BaseModel):
     tg_id: int
 
+class CasinoRequest(BaseModel):
+    tg_id: int
+    bet: int
+
 
 async def get_internal_user_id(tg_id: int)-> int:
     user_id = await users_requests.get_user_id(tg_id)
@@ -74,6 +78,17 @@ async def get_user_income(user_id: int = Depends(get_internal_user_id)):
 
     return {"income": income}
 
+@router.post("/users/play/casino")
+async def play_casino(data: CasinoRequest):
+    user_id = await  users_requests.get_user_id(data.tg_id)
+    if not user_id:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    result = await users_requests.casino(user_id, data.bet)
+    if not result:
+        raise HTTPException(status_code=400, detail="Not enough coins or invalid bet")
+
+    return result
 
 
 # upgrades requests

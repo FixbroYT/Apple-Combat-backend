@@ -1,3 +1,5 @@
+from random import randint
+
 from sqlalchemy import select
 
 from app.database.models import async_session, User, UserUpgrade, Upgrade, Location, UserLocation
@@ -133,3 +135,33 @@ async def change_current_user_location(user_id, location_id):
             "success": True,
             "current_location": location_name
         }
+
+async def casino(user_id, bet):
+    async with async_session() as session:
+        user = await session.scalar(select(User).where(User.id == user_id))
+
+        if bet > user.coins or bet > 1000 or bet < 1:
+            return None
+
+        user.coins -= bet
+        await session.flush()
+
+        random_num = randint(1, 100)
+
+        win = True
+
+        if random_num <= 5:
+            win_amount = bet * 4
+        elif 5 < random_num <= 20:
+            win_amount = bet * 3
+        elif 20 < random_num <= 50:
+            win_amount = bet * 2
+        else:
+            win_amount = 0
+            win = False
+
+        user.coins += win_amount
+        await session.flush()
+        await session.commit()
+
+        return {"win": win, "win_amount": win_amount, "user_coins": user.coins}
