@@ -78,7 +78,7 @@ async def get_user_income(user_id: int = Depends(get_internal_user_id)):
 
     return {"income": income}
 
-@router.post("/users/play/casino")
+@router.post("/mini-games/casino")
 async def play_casino(data: CasinoRequest):
     user_id = await  users_requests.get_user_id(data.tg_id)
     if not user_id:
