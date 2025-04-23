@@ -22,7 +22,6 @@
 - 👤 User registration via Telegram ID
 - 💸 Coin system with active and passive income
 - 🌍 Location bonuses and progression
-- 🎲 Mini-games (starting with a Casino game)
 - 🧠 Clean and scalable architecture
 - 🚀 Production-ready structure
 
